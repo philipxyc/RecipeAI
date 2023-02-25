@@ -47,7 +47,7 @@ const createCodeDavinciPrompt = (query: string, sources: Source[]) => {
 export const createPrompt = (query: string, sources: Source[], model: OpenAIModel) => {
   switch (model) {
     case OpenAIModel.DAVINCI_TEXT:
-      return createTextDavinciPrompt(query, sources);
+      return query;
     case OpenAIModel.CURIE_TEXT:
       return createTextCuriePrompt(query, sources);
     case OpenAIModel.DAVINCI_CODE:
