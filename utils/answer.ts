@@ -70,7 +70,7 @@ export const OpenAIStream = async (prompt: string, model: OpenAIModel, apiKey: s
     body: JSON.stringify({
       model,
       prompt,
-      max_tokens: 120,
+      max_tokens: 3000,
       temperature: 0.0,
       top_p: 1,
       frequency_penalty: 0,
