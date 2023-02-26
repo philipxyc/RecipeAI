@@ -2,21 +2,9 @@ import { OpenAIModel, Source } from "@/types";
 import endent from "endent";
 import { createParser, ParsedEvent, ReconnectInterval } from "eventsource-parser";
 
-const createTextDavinciPrompt = (query: string) => {
-  return "";
-};
-
-export const createPrompt = (query: string, sources: Source[], model: OpenAIModel) => {
-  switch (model) {
-    case OpenAIModel.DAVINCI_TEXT:
-      return createTextDavinciPrompt(query);
-  }
-};
-
-export const OpenAIStream = async (prompt: string, model: OpenAIModel, apiKey: string) => {
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
-
+export const RecipesResponse = async (prompt: string, model: OpenAIModel, apiKey: string) => {
+  prompt = prompt + " Following the format below for output. Format: {\"Ingredients\": [{\"text\": \"1 cup uncooked white rice\",\"url\": \"\"}, {\"text\": \"2 tablespoons butter\",\"url\": \"\"}, {\"text\": \"1/2 cup plain yogurt\",\"url\": \"\"}, {\"text\": \"1/4 teaspoon salt\",\"url\": \"\"}], \"Steps\": [\"1. Rinse the rice in a fine mesh strainer and drain well.\", \"2. In a medium saucepan, melt the butter over medium heat. Add the drained rice and stir to coat in the butter.\", \"3. Add 1 3/4 cups of water and 1/4 teaspoon of salt to the pan, and bring to a boil.\", \"4. Reduce the heat to low, cover the pan with a tight-fitting lid, and simmer for 18-20 minutes, or until the water is absorbed and the rice is tender.\", \"5. Remove the pan from the heat and let it sit, covered, for 5-10 minutes to steam.\", \"6. Fluff the rice with a fork and stir in the plain yogurt until well combined.\", \"7. Serve the rice warm, garnished with fresh herbs or a sprinkle of paprika if desired.\"]}";
+  
   const res = await fetch("https://api.openai.com/v1/completions", {
     headers: {
       "Content-Type": "application/json",
@@ -41,35 +29,36 @@ export const OpenAIStream = async (prompt: string, model: OpenAIModel, apiKey: s
     throw new Error("OpenAI API returned an error");
   }
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const onParse = (event: ParsedEvent | ReconnectInterval) => {
-        if (event.type === "event") {
-          const data = event.data;
+  let gpt_output = await res.json();
+  const gpt_output_str = gpt_output.choices[0]['text'];
+  const gpt_output_json = JSON.parse(gpt_output_str);
+  
+  // Get image from DALL-E api
+  // loop through ingredients
+  for (let i = 0; i < gpt_output_json.Ingredients.length; i++) {
+    const ingredient_text = gpt_output_json.Ingredients[i]['text'];
 
-          if (data === "[DONE]") {
-            controller.close();
-            return;
-          }
+    const res_dalle = await fetch("https://api.openai.com/v1/images/generations", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`
+      },
+      method: "POST",
+      body: JSON.stringify({
+        "prompt": ingredient_text,
+        "n": 1,
+        "size": "1024x1024"
+      })
+    });
 
-          try {
-            const json = JSON.parse(data);
-            const text = json.choices[0].text;
-            const queue = encoder.encode(text);
-            controller.enqueue(queue);
-          } catch (e) {
-            controller.error(e);
-          }
-        }
-      };
-
-      const parser = createParser(onParse);
-
-      for await (const chunk of res.body as any) {
-        parser.feed(decoder.decode(chunk));
-      }
+    if (res_dalle.status !== 200) {
+      throw new Error("OpenAI API returned an error");
     }
-  });
 
-  return stream;
+    let dalle_output = await res_dalle.json();
+    const ingredient_url = dalle_output.data[0].url;
+    gpt_output_json.Ingredients[i]['url'] = ingredient_url;
+  }
+
+  return gpt_output_json;
 };

@@ -51,7 +51,7 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
   const handleStream = async (sources: Source[]) => {
     try {
       let prompt = createPrompt(query, sources, model);
-      const response = await fetch("/api/answer", {
+      const response = await fetch("/api/recipes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
