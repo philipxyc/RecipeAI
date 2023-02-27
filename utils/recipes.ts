@@ -60,5 +60,5 @@ export const RecipesResponse = async (prompt: string, model: OpenAIModel, apiKey
     gpt_output_json.Ingredients[i]['url'] = ingredient_url;
   }
 
-  return gpt_output_json;
+  return JSON.stringify(gpt_output_json);
 };

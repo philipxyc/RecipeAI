@@ -15,7 +15,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const recipes = await RecipesResponse(prompt, model, apiKey);
 
-    return new Response();
+    return new Response(recipes);
   } catch (error) {
     console.error(error);
     return new Response("Error", { status: 500 });
