@@ -35,10 +35,11 @@ export const RecipesResponse = async (prompt: string, model: OpenAIModel, apiKey
   
   // Get image from DALL-E api
   // loop through ingredients
-  for (let i = 0; i < gpt_output_json.Ingredients.length; i++) {
+  let promises = [];
+  let num_ingredients = gpt_output_json.Ingredients.length;
+  for (let i = 0; i < num_ingredients; i++) {
     const ingredient_text = gpt_output_json.Ingredients[i]['text'];
-
-    const res_dalle = await fetch("https://api.openai.com/v1/images/generations", {
+    promises.push(fetch("https://api.openai.com/v1/images/generations", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`
@@ -49,13 +50,12 @@ export const RecipesResponse = async (prompt: string, model: OpenAIModel, apiKey
         "n": 1,
         "size": "1024x1024"
       })
-    });
+    }).then((res) => res.json()));
+  }
 
-    if (res_dalle.status !== 200) {
-      throw new Error("OpenAI API returned an error");
-    }
-
-    let dalle_output = await res_dalle.json();
+  const all_dalle_outputs = await Promise.all(promises);
+  for (let i = 0; i < num_ingredients; i++) {
+    let dalle_output = all_dalle_outputs[i];
     const ingredient_url = dalle_output.data[0].url;
     gpt_output_json.Ingredients[i]['url'] = ingredient_url;
   }
