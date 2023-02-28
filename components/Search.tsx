@@ -25,7 +25,8 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
     }
 
     setLoading(true);
-    const sources = await fetchSources();
+    // const sources = await fetchSources();
+    const sources: Source[] = [{ url: "", text: "" }];
     await handleStream(sources);
   };
 
