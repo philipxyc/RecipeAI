@@ -68,24 +68,9 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
       setLoading(false);
       onSearch({ query, sourceLinks: sources.map((source) => source.url) });
 
-      const data = response.body;
+      const data = await response.json();
 
-      if (!data) {
-        return;
-      }
-
-      const reader = data.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        const chunkValue = decoder.decode(value);
-        onAnswerUpdate(chunkValue);
-      }
-
-      onDone(true);
+      onAnswerUpdate(JSON.stringify(data));
     } catch (err) {
       onAnswerUpdate("Error");
     }
