@@ -1,4 +1,3 @@
-import { OpenAIModel } from "@/types";
 import { RecipesResponse } from "@/utils/recipes";
 
 export const config = {
@@ -7,13 +6,13 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { prompt, model, apiKey } = (await req.json()) as {
+    const { prompt, apiKey } = (await req.json()) as {
       prompt: string;
-      model: OpenAIModel;
+      model: "text-davinci-003";
       apiKey: string;
     };
 
-    const recipes = await RecipesResponse(prompt, model, apiKey);
+    const recipes = await RecipesResponse(prompt, apiKey);
 
     return new Response(recipes);
   } catch (error) {

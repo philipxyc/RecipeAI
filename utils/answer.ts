@@ -1,4 +1,4 @@
-import { OpenAIModel, Source } from "@/types";
+import { Source } from "@/types";
 import endent from "endent";
 import { createParser, ParsedEvent, ReconnectInterval } from "eventsource-parser";
 
@@ -44,20 +44,11 @@ const createCodeDavinciPrompt = (query: string, sources: Source[]) => {
   ANSWER`;
 };
 
-export const createPrompt = (query: string, sources: Source[], model: OpenAIModel) => {
-  switch (model) {
-    case OpenAIModel.DAVINCI_TEXT:
-      return query;
-    case OpenAIModel.CURIE_TEXT:
-      return createTextCuriePrompt(query, sources);
-    case OpenAIModel.DAVINCI_CODE:
-      return createCodeDavinciPrompt(query, sources);
-    default:
-      return createCodeDavinciPrompt(query, sources);
-  }
+export const createPrompt = (query: string, sources: Source[]) => {
+  return query
 };
 
-export const OpenAIStream = async (prompt: string, model: OpenAIModel, apiKey: string) => {
+export const OpenAIStream = async (prompt: string, apiKey: string) => {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -68,7 +59,7 @@ export const OpenAIStream = async (prompt: string, model: OpenAIModel, apiKey: s
     },
     method: "POST",
     body: JSON.stringify({
-      model,
+      // model,
       prompt,
       max_tokens: 3000,
       temperature: 0.0,
