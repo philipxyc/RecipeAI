@@ -13,10 +13,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>BlitzAI</title>
+        <title>AI Recipe</title>
         <meta
           name="description"
-          content="Recipes powered by AI."
+          content="Recipes powered by AI with images."
         />
         <meta
           name="viewport"

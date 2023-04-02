@@ -3,7 +3,7 @@ import endent from "endent";
 import { createParser, ParsedEvent, ReconnectInterval } from "eventsource-parser";
 
 export const RecipesResponse = async (prompt: string, model: OpenAIModel, apiKey: string) => {
-  prompt = prompt + " Following the format below for output. Format: {\"Ingredients\": [{\"text\": \"1 cup uncooked white rice\",\"url\": \"\"}, {\"text\": \"2 tablespoons butter\",\"url\": \"\"}, {\"text\": \"1/2 cup plain yogurt\",\"url\": \"\"}, {\"text\": \"1/4 teaspoon salt\",\"url\": \"\"}], \"Steps\": [\"1. Rinse the rice in a fine mesh strainer and drain well.\", \"2. In a medium saucepan, melt the butter over medium heat. Add the drained rice and stir to coat in the butter.\", \"3. Add 1 3/4 cups of water and 1/4 teaspoon of salt to the pan, and bring to a boil.\"]}";
+  prompt = prompt + " ###Following the format below for output. Format: {\"Ingredients\": [{\"text\": \"1 cup uncooked white rice\",\"url\": \"\"}, {\"text\": \"2 tablespoons butter\",\"url\": \"\"}, {\"text\": \"1/2 cup plain yogurt\",\"url\": \"\"}, {\"text\": \"1/4 teaspoon salt\",\"url\": \"\"}], \"Steps\": [\"1. Rinse the rice in a fine mesh strainer and drain well.\", \"2. In a medium saucepan, melt the butter over medium heat. Add the drained rice and stir to coat in the butter.\", \"3. Add 1 3/4 cups of water and 1/4 teaspoon of salt to the pan, and bring to a boil.\"]}";
   
   const res = await fetch("https://api.openai.com/v1/completions", {
     headers: {
@@ -48,7 +48,7 @@ export const RecipesResponse = async (prompt: string, model: OpenAIModel, apiKey
       body: JSON.stringify({
         "prompt": ingredient_text,
         "n": 1,
-        "size": "1024x1024"
+        "size": "256x256"
       })
     }).then((res) => res.json()));
   }
