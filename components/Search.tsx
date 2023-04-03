@@ -2,6 +2,10 @@ import { SearchQuery, Source } from "@/types";
 import { createPrompt } from "@/utils/answer";
 import { IconArrowRight, IconBolt, IconSearch } from "@tabler/icons-react";
 import { FC, KeyboardEvent, useEffect, useRef, useState } from "react";
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Box from '@mui/material/Box';
 
 interface SearchProps {
   onSearch: (searchResult: SearchQuery) => void;
@@ -16,6 +20,7 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
   const [apiKey, setApiKey] = useState<string>("");
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [trial, setTrial] = useState<boolean>(false);
 
   const handleSearch = async () => {
     if (!query) {
@@ -103,10 +108,9 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
         <div className="mx-auto flex h-full w-full max-w-[750px] flex-col items-center space-y-6 px-3 pt-32 sm:pt-64">
           <div className="flex items-center">
             <IconBolt size={36} />
-            <div className="ml-1 text-center text-4xl">BlitzAI</div>
+            <div className="ml-1 text-center text-4xl">Recipe AI</div>
           </div>
-
-          {apiKey.length === 51 ? (
+          {(apiKey.length === 51 || trial) ? (
             <div className="relative w-full">
               <IconSearch className="text=[#D4D4D8] absolute top-3 w-10 left-1 h-6 rounded-full opacity-50 sm:left-3 sm:top-4 sm:h-8" />
 
@@ -114,7 +118,7 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
                 ref={inputRef}
                 className="h-12 w-full rounded-full border border-zinc-600 bg-[#2A2A31] pr-12 pl-11 focus:border-zinc-800 focus:bg-[#18181C] focus:outline-none focus:ring-2 focus:ring-zinc-800 sm:h-16 sm:py-2 sm:pr-16 sm:pl-16 sm:text-lg"
                 type="text"
-                placeholder="Ask anything..."
+                placeholder="I only have beef; chicken dish with 25 hands-on minute..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -128,15 +132,19 @@ export const Search: FC<SearchProps> = ({ onSearch, onAnswerUpdate, onDone }) =>
               </button>
             </div>
           ) : (
-            <div className="text-center text-[#D4D4D8]">Please enter your OpenAI API key.</div>
+            <div className="text-center text-[#D4D4D8]">Please select `Free Tial`, or enter your OpenAI API key. </div>
           )}
 
-          <button
-            className="flex cursor-pointer items-center space-x-2 rounded-full border border-zinc-600 px-3 py-1 text-sm text-[#D4D4D8] hover:text-white"
-            onClick={() => setShowSettings(!showSettings)}
-          >
-            {showSettings ? "Hide" : "Show"} Settings
-          </button>
+          <FormGroup>
+            <FormControlLabel control={<Switch onClick={() => setTrial(!trial)} />} label="Free Trial" />
+            <Box sx={{ m: 2 }} />
+            <button
+              className="flex cursor-pointer items-center space-x-2 rounded-full border border-zinc-600 px-3 py-1 text-sm text-[#D4D4D8] hover:text-white"
+              onClick={() => setShowSettings(!showSettings)}
+            >
+              {showSettings ? "Hide" : "Show"} API Settings
+            </button>
+          </FormGroup>
 
           {showSettings && (
             <>

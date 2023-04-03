@@ -28,7 +28,6 @@ export const Answer: FC<AnswerProps> = ({ searchQuery, answer, done, onReset }) 
       <div className="overflow-auto text-2xl sm:text-4xl">{searchQuery.query}</div>
 
       <div className="border-b border-zinc-800 pb-4">
-        <div className="text-md text-blue-500">Answer</div>
 
         {/* <div className="mt-2 overflow-auto">{replaceSourcesWithLinks(answer, searchQuery.sourceLinks)}</div> */}
         
@@ -53,6 +52,7 @@ export const Answer: FC<AnswerProps> = ({ searchQuery, answer, done, onReset }) 
         </ImageList>
       </div>
  
+    <div className="text-md text-blue-500">Steps</div>
     <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.black' }}>
       {ans.Steps.map((value:string) => (
         <ListItem
@@ -103,28 +103,4 @@ export const Answer: FC<AnswerProps> = ({ searchQuery, answer, done, onReset }) 
       )}
     </div>
   );
-};
-
-const replaceSourcesWithLinks = (answer: string, sourceLinks: string[]) => {
-  const elements = answer.split(/(\[[0-9]+\])/).map((part, index) => {
-    if (/\[[0-9]+\]/.test(part)) {
-      const link = sourceLinks[parseInt(part.replace(/[\[\]]/g, "")) - 1];
-
-      return (
-        <a
-          key={index}
-          className="hover:cursor-pointer text-blue-500"
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {part}
-        </a>
-      );
-    } else {
-      return part;
-    }
-  });
-
-  return elements;
 };
