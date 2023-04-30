@@ -1,7 +1,22 @@
 import endent from "endent";
 import { createParser, ParsedEvent, ReconnectInterval } from "eventsource-parser";
+import {Ratelimit} from "@upstash/ratelimit";
+import {Redis} from "@upstash/redis";
+
+
+const redis = new Redis({
+  url: 'UPSTASH_REDIS_REST_URL',
+  token: 'UPSTASH_REDIS_REST_TOKEN',
+})
+
+// Create a new ratelimiter, that allows 5 requests per 5 seconds
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.fixedWindow(5, "5 s"),
+});
 
 export const RecipesResponse = async (prompt: string, apiKey: string) => {
+  
   if(apiKey=="" && process.env.OPENAI_KEY)
     apiKey=process.env.OPENAI_KEY;
   
